@@ -1,0 +1,211 @@
+<html lang=en>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>
+      T-UI Launcher
+    </title>
+
+    {% load static %}
+    <link rel="icon" href="{% static "imgs/favicon.png" %}">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static "css/style.css" %}" type="text/css" />
+
+    <!-- Scripts -->
+    <!-- jQuery Library -->
+    <script src="{% static "js/jquery-3.3.1.min.js" %}" charset="utf-8"></script>
+    <!-- Core Script -->
+    <script src="{% static "js/script.js" %}" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      /* execute only when the page is ready */
+      $(document).ready(function() {
+        var offset = 220;
+        var duration = 500;
+        var scrollDown = 0;
+        $(window).scroll(function() {
+          if ($(this).scrollTop() > offset) {
+            $('.back-to-top').fadeIn(duration);
+          } else {
+            $('.back-to-top').fadeOut(duration);
+          }
+          if (scrollDown > 0) {
+            $('.back-to-down').fadeIn(duration);
+          } else {
+            $('.back-to-down').fadeOut(duration);
+          }
+        });
+
+        $('.back-to-top').click(function(event) {
+          event.preventDefault();
+          $('html, body').animate({
+            scrollTop: 0
+          }, duration);
+          scrollDown = event.pageY - window.innerHeight + 50;
+          return false;
+        });
+
+        $('.back-to-down').click(function(event) {
+          event.preventDefault();
+          $('html, body').animate({
+            scrollTop: scrollDown
+          }, duration);
+          scrollDown = 0;
+          return false;
+        });
+
+        var display_themes = 20;
+        var order_type = "ASC";
+        var order_by = "name";
+
+        $(document).on("click", ".loadMore", function() {
+          $(this).css("display", "none");
+          getData(display_themes, order_by, order_type);
+        });
+
+        $(document).on("click", ".sortButton", function() {
+          $("#theme_list").html('');
+          last = 0;
+          order_type = $("#orderType option:selected").attr('value');
+          order_by = $("#orderBy option:selected").attr('value');
+          getData(display_themes, order_by, order_type);
+        });
+
+        function getData(n, order_by, order_type) {
+          $.ajax({
+                  url: '/ajax/more_themes/',
+                  data: {
+                    'how_much' : n,
+                    'order_by' : order_by,
+                    'order_type' : orderType,
+                  },
+                  dataType: 'json',
+                  success: function (data) {
+                    /* occhio che qui vuole HTML puro, mentre noi riceviamo un JSON */
+                    $("#theme_list").append(data);
+                    last += 20;
+                  }
+                });
+        }
+      });
+
+    </script>
+
+  </head>
+
+  <body>
+    <div class="container">
+
+      <header>
+        <h1>t-ui launcher</h1>
+        <h5>
+          <ul class="nav" style="padding-bottom:0px;">
+            <li><a target="_blank" href="https://play.google.com/store/apps/details?id=ohi.andre.consolelauncher">[Play Store]</a></li>
+            <li><a target="_blank" href="https://www.reddit.com/r/tui_launcher/">[Reddit]</a></li>
+            <li><a target="_blank" href="https://twitter.com/tui_launcher">[Twitter]</a></li>
+            <li><a target="_blank" href="https://t.me/tuilauncher">[Telegram]</a></li>
+          </ul>
+        </h5>
+        <ul class="nav">
+          <li><a href="./new_theme">[New Theme]</a></li>
+        </ul>
+      </header>
+      <div class="toastMe toastHide"></div>
+
+      <div class="theme_list_form">
+        <div class="theme_list_sort">
+          <select id="orderBy" name="orderBy">
+            <option selected="selected" value="name">Theme Name</option>
+            <option value="author">Author Name</option>
+            <option value="downloads">Number of Downloads</option>
+          </select>
+          <select id="orderType" name="orderType">
+            <option value="asc">
+              Ascending
+            </option>
+            <option selected="selected" value="desc">
+              Decending
+            </option>
+          </select>
+          <button class="sortButton">Rearrange List</button>
+        </div>
+        <div class="theme_list_search" style="display:none;">
+          <input type="search" />
+          <button class="searchButton"><i class="material-icons md-24">search</i></button>
+        </div>
+      </div>
+
+      <!-- start of theme list -->
+      <div class="theme_list" id="theme_list">
+        {% for theme in themes %}
+          <div class="theme_item">
+            <div class="bg_color theme_preview" style="background-color: {{ theme.bg_color }} ">
+              <div class="upperLayer">
+                <span class="device_color" style="color: {{ theme.device_color }} ">bullhead : John</span>
+                <span class="ram_color" style="color: {{ theme.ram_color }}">RAM: 72%</span>
+                <span class="battery_color_high" style="color: {{ theme.battery_color_high }}">Battery: 65%</span>
+                <span class="time_color" style="color: {{ theme.time_color }}">{{ dt_string }}</span>
+                <span class="storage_color" style="color: {{ theme.storage_color }}">Storage: 56%</span>
+                <span class="notes_color" style="color: {{ theme.notes_color }}">Notes</span>
+                <br>
+                <span class="input_color" style="color: {{ theme.input_color }}">echo t-ui!</span>
+                <span class="output_color" style="color: {{ theme.output_color }}">t-ui!</span>
+                <br>
+                <div class="input_area">
+                  <span class="input_color" style="color: {{ theme.input_color }}">$</span>
+                  <input type="text" class="input_color" style="color: {{ theme.input_color }}">
+                  <i class="input_color enter_color material-icons float-right" style="color: {{ theme.enter_color }}">arrow_back</i>
+                </div>
+                <div class="bottom-toolbar toolbar_color toolbar_bg" style="color: {{ theme.toolbar_color }}; background-color: {{ theme.toolbar_bg }}">
+                  <i class="material-icons md-18">close</i>
+                  <i class="material-icons md-24">keyboard_arrow_up</i>
+                  <i class="material-icons md-24">keyboard_arrow_down</i>
+                  <i class="material-icons md-18">content_paste</i>
+                </div>
+                <div class="suggestions" {% if theme.enabled == False %} style="visibility: hidden" {% endif %}>
+                  <div class="box file_bg_color file_text_color" style="color: {{ theme.file_text_color }};
+                      background-color: {% if theme.transparent == True %} transparent {% else %} {{ theme.file_bg_color }} {% endif %}">file</div>
+                  <div class="box apps_bg_color apps_text_color" style="color: {{ theme.apps_text_color }};
+                      background-color: {% if theme.transparent == True %} transparent {% else %} {{ theme.apps_bg_color }} {% endif %}">apps</div>
+                  <div class="box cmd_bg_color cmd_text_color" style="color: {{ theme.cmd_text_color }};
+                      background-color: {% if theme.transparent == True %} transparent {% else %} {{ theme.cmd_bg_color }} {% endif %}">cmd</div>
+                  <div class="box song_bg_color song_text_color" style="color: {{ theme.song_text_color }};
+                      background-color: {% if theme.transparent == True %} transparent {% else %} {{ theme.song_bg_color }} {% endif %}">song</div>
+                  <div class="box alias_bg_color alias_text_color" style="color: {{ theme.alias_text_color }};
+                      background-color: {% if theme.transparent == True %} transparent {% else %} {{ theme.alias_bg_color }} {% endif %}">alias</div>
+                  <div class="box contact_bg_color contact_text_color" style="color: {{ theme.contact_text_color }};
+                      background-color: {% if theme.transparent == True %} transparent {% else %} {{ theme.contact_bg_color }} {% endif %}">contact</div>
+                </div>
+              </div>
+            </div>
+            <h1>
+            <p align="left">{{ theme.name }}<span class="downloads">{{ theme.downloads }}</span></p>
+          </h1>
+            <h2>
+            <p class="author">{{ theme.author }}</p>
+          </h2>
+            <div class="actions">
+              <div class="desktop-only">
+                <div class="themeString">
+                  <code><pre>$ theme -apply {{ theme.name }}</pre></code>
+                </div>
+              </div>
+              <div class="mobile-only">
+                <div class="themeString">
+                  <code><pre>$ theme -apply {{ theme.name }}</pre></code>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+          <button class="loadMore">---- Load More themes ----</button>
+      </div>
+      <!-- end of theme list -->
+
+      <a href="#" class="back-to-top"><i class="material-icons md-18">arrow_upward</i></a>
+      <a href="#" class="back-to-down"><i class="material-icons md-18">arrow_downward</i></a>
+  </body>
+
+</html>
