@@ -1,0 +1,21 @@
+<div class="theme_item">
+  {{ theme_preview }}
+  <h2>
+    <p align="left">{{ theme.name }}<span class="downloads">{{ theme.downloads }}</span></p>
+  </h2>
+  <h3>
+    <p align="left">By<span class="author">{{ theme.author }}</span></p>
+  </h3>
+  <div class="actions">
+    <div class="desktop-only">
+      <div class="themeString">
+        <code><pre>$ theme -apply {{ theme.id }}</pre></code>
+      </div>
+    </div>
+    <div class="mobile-only">
+      <div class="themeString">
+        <code><pre>$ theme -apply {{ theme.id }}</pre></code>
+      </div>
+    </div>
+  </div>
+</div>

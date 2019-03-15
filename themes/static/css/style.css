@@ -302,7 +302,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .theme_list .theme_item {
   width: 23%;
-  padding: 1em;
+  padding: 2em 1em;
   min-width: 250px;
   overflow: hidden;
   float: left;
@@ -316,24 +316,31 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-block;
 }
 
-.theme_list h1,.theme_list p {
-  height: 32px;
-}
-
 .theme_list .theme_item .actions {
   color: white;
 }
 
 .theme_list .theme_item .author {
-  max-height: 15px;
-  overflow: hidden;
-  display: block;
-  width: 100%;
-  text-align: right;
+  color: white;
+  float: right;
+}
+
+.theme_list .theme_item .id {
+  float: right;
   color: white;
 }
 
 .theme_list .theme_item .downloads {
+  float: right;
+  color: white;
+}
+
+.theme_list .theme_item a:hover {
+  color: white;
+  cursor: pointer;
+}
+
+.theme_list .theme_item .edit_published_theme {
   float: right;
 }
 
@@ -341,12 +348,8 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
   font-size: 1.5em;
   border: 1px solid #14FF00;
-  padding: 0.5em;
-  overflow: scroll;
-  cursor: pointer;
-  height: 64px;
+  padding: 0em 0.5em;
   display:flex;
-  align-items:center;
 }
 
 /* create theme */
@@ -424,25 +427,6 @@ h1, h2, h3, h4, h5, h6 {
   color: #000;
 }
 
-.create_theme .checkbox {
-  padding: 1em;
-  position: relative;
-  display: inline-block;
-  max-width: 175px;
-  min-height: 40px;
-  border: 1px solid;
-  margin: 0px 5px 5px 0px;
-  width: 27vw;
-}
-
-.create_theme .checkbox label {
-  padding: 1em;
-  position: absolute;
-  background: #000;
-  bottom: 0px;
-  left: 0px;
-}
-
 .create_theme .setting {
   background: #14FF00;
   color: #000;
@@ -452,6 +436,14 @@ h1, h2, h3, h4, h5, h6 {
   width: 120px;
   clear: both;
   float: right;
+}
+
+.create_theme .checkboxs input[value="show_suggestions"] {
+  margin: 1em 1em 1em 5em;
+}
+
+.create_theme .checkboxs input[value="transparent_suggestions"] {
+  margin: 1em 1em 1em 5em;
 }
 
 .create_theme .download {
@@ -464,6 +456,10 @@ h1, h2, h3, h4, h5, h6 {
   clear: both;
   display: inline-block;
   margin: 1em;
+}
+
+.create_theme .download a:hover {
+  color: white
 }
 
 .create_theme .download .error {

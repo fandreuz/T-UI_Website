@@ -53,49 +53,49 @@ $(document).ready(function() {
     return xmlString + '</' + type + '>\r\n';
   }
 
-  function generateObj() {
+  // pack a themeXML and a suggestionsXML dict
+  function generateObj(themeElement) {
     themeXML = {};
     suggestionsXML = {};
+    // counts the number of non-default options
     changeCounter = 0;
+
+    // gather values from theme.xml inputs
     $('label', $('.themexml')).each(function() {
       var forVal = $(this).attr('for');
-      var siblingVal = $(this).siblings("input[type=color]").val();
-      var siblingDefaultVal = $(this).siblings("input[type=color]").attr('defaultValue');
-      var rgbaCol = 'rgba(' + parseInt(siblingVal.slice(-6, -4), 16) + ',' + parseInt(siblingVal.slice(-4, -2), 16) + ',' + parseInt(siblingVal.slice(-2), 16) + ',1)';
-//      console.log(rgbaCol+" != "+siblingDefaultVal);
-      if(rgbaCol != siblingDefaultVal) {
-        themeXML[forVal] = siblingVal;
-        if (forVal == 'overlay_color') {
-          themeXML[forVal] += (Math.round(Number($(this).siblings("input[type=hidden]").val()) * 255)).toString(16);
-        }
-      changeCounter++;
+
+      // the current value of the jscolor input
+      var siblingVal = $(this).siblings("[class='jscolor']").val();
+      // default value
+      var siblingDefaultVal = $(this).siblings("[class='jscolor']").attr('defaultValue');
+
+      if(siblingVal != siblingDefaultVal) {
+        themeXML[forVal] = '#' + siblingVal;
+        changeCounter++;
       }
     });
-    $('label', $('.suggestionsxml')).each(function() {
-      if ($(this).attr('for') == 'enabled') {
-        if ($(this).html() == 'enabled true') {
-          suggestionsXML['show_suggestions'] = true;
-        } else {
-          suggestionsXML['show_suggestions'] = false;
-        }
-      } else if ($(this).attr('for') == 'transparent') {
-        if ($(this).html() == 'transparent true') {
-          suggestionsXML['transparent_suggestions'] = true;
-        } else {
-          suggestionsXML['transparent_suggestions'] = false;
-        }
-      } else {
+
+    // gather values from suggestions.xml inputs
+    var enabled = $("[value='show_suggestions']").prop('checked');
+    suggestionsXML['show_suggestions'] = enabled;
+    if(enabled) {
+      var transparent = $("[value='transparent_suggestions']").prop('checked');
+      suggestionsXML['transparent_suggestions'] = transparent;
+
+      $('label', $('.suggestionsxml')).each(function() {
         var forVal = $(this).attr('for');
-        var siblingVal = $(this).siblings("input[type=color]").val();
-        var siblingDefaultVal = $(this).siblings("input[type=color]").attr('defaultValue');
-        var rgbaCol = 'rgba(' + parseInt(siblingVal.slice(-6, -4), 16) + ',' + parseInt(siblingVal.slice(-4, -2), 16) + ',' + parseInt(siblingVal.slice(-2), 16) + ',1)';
-//        console.log(rgbaCol+" != "+siblingDefaultVal);
-        if(rgbaCol != siblingDefaultVal) {
-          suggestionsXML[forVal] = siblingVal;
-          changeCounter++;
+        if(transparent && forVal.includes('bg')) return;
+        else {
+          var siblingVal = $(this).siblings("[class='jscolor']").val();
+          var siblingDefaultVal = $(this).siblings("[class='jscolor']").attr('defaultValue');
+
+          if(siblingVal != siblingDefaultVal) {
+            suggestionsXML[forVal] = '#' + siblingVal;
+            changeCounter++;
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   $("#publish-online").on('click', function() {
@@ -114,8 +114,38 @@ $(document).ready(function() {
     downloadZIP();
     $('.user-form').css("display", "none");
     $('.links').css("display", "block");
-//    $('#publish-online').css("display", "none");
   });
+
+  // ####
+  // index.html
+  // ####
+
+  $(".edit_published_theme").on('click', function() {
+    var idString = $(this).prop('id');
+    var lIndex = idString.lastIndexOf('_');
+    var id = idString.substring(lIndex + 1);
+
+    generateObjFromPreview(id);
+
+    $.post({
+      url: '/new_theme',
+      data: {
+        'theme' : themeXML,
+        'suggestions' : suggestionsXML
+      }
+    });
+  });
+
+  $(".download_published_theme").on('click', function() {
+    var idString = $(this).prop('id');
+    var lIndex = idString.lastIndexOf('_');
+    var id = idString.substring(lIndex + 1);
+
+    generateObjFromPreview(id);
+    downloadZIP();
+  });
+
+  // ####
 
   // checks if the theme name is good
   function checkname(response)
@@ -184,71 +214,45 @@ $(document).ready(function() {
     });
   });
 
-  $(".checkbox").on('click change', function() {
-    var getLabel = $(this).find("label");
-    var getLabelValue = getLabel.html();
-    var elementCurrentState = getLabelValue.split(" ");
-    if (elementCurrentState[0] == 'enabled') {
-      if (elementCurrentState[1] == 'true') {
-        $(getLabel).html(elementCurrentState[0] + " false");
-        $(".suggestions").css("display", "none");
-      } else if (elementCurrentState[1] == 'false') {
-        $(getLabel).html(elementCurrentState[0] + " true");
-        $(".suggestions").css("display", "block");
-      }
-    } else if (elementCurrentState[0] == 'transparent') {
-      if (elementCurrentState[1] == 'true') {
-        $(getLabel).html(elementCurrentState[0] + " false");
+  $("[type='checkbox']").on('click change', function() {
+    var value = $(this).prop('value');
+    var checked = $(this).prop('checked');
+
+    if(value == "show_suggestions") {
+      var show;
+      if(checked) show = "block";
+      else show = "none";
+
+      $(".suggestions").css("display", show);
+    } else if(value == "transparent_suggestions") {
+      if(!checked) {
         $(".box").css("background-color", "");
-        $(this).parents('div.pallet').find("input[type=color]").each(function() {
+        $(this).parents('div.pallet').find("[class='jscolor']").each(function() {
           $(this).trigger('change');
         });
-      } else if (elementCurrentState[1] == 'false') {
-        $(getLabel).html(elementCurrentState[0] + " true");
+      } else {
         $(".box").css("background-color", "transparent");
       }
     }
   });
 
-  function getAllEvents(element) {
-    console.log(element)
-    var result = [];
-    for (var key in element) {
-        console.log(key)
-        if (key.indexOf('on') === 0) {
-            result.push(key.slice(2));
-        }
-    }
-    return result.join(' ');
-  }
-
-  $("[class='jscolor']").on('OnChange onchange change onChange onFineChange finechange FineChange', function() {
-    console.log('chhh')
-
+  // triggered whenever a color is changed
+  $("[class='jscolor']").on('keyup keypress blur change', function() {
     var _color = this.value;
-    console.log(_color)
 
     // for each label, find the label specified in 'for' and change the corresponding property
     $(this).siblings('label').each(function() {
-      console.log('imhere')
-
       var finalClass = $(this).attr('for');
 
       // if it's a bg...
       if (finalClass.match(/bg/g) == 'bg') {
-        console.log('now here')
-
         $("." + finalClass).css("background-color", _color);
       }
       // if it's a text color...
       else {
-        console.log('hehe')
-
         $("." + finalClass).css("color", _color);
       }
-      //$(this).parents('div.swatch').css("background-color", finalColor);
-
-      console.log('end')
+      $(this).parents('div.swatch').css("background-color", _color);
     });
   });
 });
