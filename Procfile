@@ -1,1 +1,1 @@
-web: gunicorn sampledeploy.wsgi —-log-file -
+web: gunicorn tui_themes.wsgi —-log-file -
