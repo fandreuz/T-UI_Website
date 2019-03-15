@@ -116,37 +116,6 @@ $(document).ready(function() {
     $('.links').css("display", "block");
   });
 
-  // ####
-  // index.html
-  // ####
-
-  $(".edit_published_theme").on('click', function() {
-    var idString = $(this).prop('id');
-    var lIndex = idString.lastIndexOf('_');
-    var id = idString.substring(lIndex + 1);
-
-    generateObjFromPreview(id);
-
-    $.post({
-      url: '/new_theme',
-      data: {
-        'theme' : themeXML,
-        'suggestions' : suggestionsXML
-      }
-    });
-  });
-
-  $(".download_published_theme").on('click', function() {
-    var idString = $(this).prop('id');
-    var lIndex = idString.lastIndexOf('_');
-    var id = idString.substring(lIndex + 1);
-
-    generateObjFromPreview(id);
-    downloadZIP();
-  });
-
-  // ####
-
   // checks if the theme name is good
   function checkname(response)
   {
