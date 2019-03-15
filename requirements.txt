@@ -2,4 +2,3 @@ django==2.1.7
 gunicorn==19.9.0
 postgres==2.2.2
 dj-database-url==0.5.0
-importlib==1.0.4
