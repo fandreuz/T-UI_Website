@@ -59,21 +59,23 @@
           return false;
         });
 
-        var display_themes = 20;
+        var last = 20;
         var order_type = 0;
         var order_by = 3;
 
         $(document).on("click", ".loadMore", function() {
-          display_themes += 20;
           $(this).css("display", "none");
-          getData(display_themes, order_by, order_type);
+          getData(last, order_by, order_type);
+          last += 20;
         });
 
         $(document).on("click", ".sortButton", function() {
+          last = 0;
           $("#theme_list").html('');
           order_type = $("#orderType option:selected").attr('value');
           order_by = $("#orderBy option:selected").attr('value');
-          getData(display_themes, order_by, order_type);
+          getData(last, order_by, order_type);
+          last = 20;
         });
 
         String.prototype.format = function() {
