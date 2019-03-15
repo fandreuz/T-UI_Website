@@ -1,1 +1,3 @@
-pip install gunicorn
+django==2.1.7
+gunicorn==19.9.0
+postgres==11.2
