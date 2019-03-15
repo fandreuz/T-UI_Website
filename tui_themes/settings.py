@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-import dj-database-url
+import importlib
+
+djdburl = importlib.import_module('dj-database-url')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -86,7 +88,7 @@ DATABASES = {
     }
 }
 
-db_from_env = dj_database_url.config()
+db_from_env = djdburl.config()
 DATABASES['default'].update(db_from_env)
 
 LANGUAGE_CODE = 'en-us'
