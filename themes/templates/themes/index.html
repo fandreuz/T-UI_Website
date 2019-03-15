@@ -64,13 +64,13 @@
         var order_by = "name";
 
         $(document).on("click", ".loadMore", function() {
+          display_themes += 20;
           $(this).css("display", "none");
           getData(display_themes, order_by, order_type);
         });
 
         $(document).on("click", ".sortButton", function() {
           $("#theme_list").html('');
-          last = 0;
           order_type = $("#orderType option:selected").attr('value');
           order_by = $("#orderBy option:selected").attr('value');
           getData(display_themes, order_by, order_type);
@@ -90,7 +90,6 @@
                   type: 'get',
                   success: function (data) {
                     $("#theme_list").append(data);
-                    last += 20;
                   },
                   error: function (data) {
                     console.log('error');
@@ -112,24 +111,21 @@
       <div class="theme_list_form">
         <div class="theme_list_sort">
           <select id="orderBy" name="orderBy">
-            <option selected="selected" value="0">Theme Name</option>
+            <option value="0">Theme Name</option>
             <option value="1">Author Name</option>
-            <option value="2">Number of Downloads</option>
+            <option value="2">Downloads</option>
+            <option value="3" selected="selected" >Date</option>
           </select>
           <select id="orderType" name="orderType">
-            <option value="0">
-              Ascending
-            </option>
-            <option selected="selected" value="1">
-              Decending
-            </option>
+            <option value="0" selected="selected" >Descending</option>
+            <option value="1">Ascending</option>
           </select>
-          <button class="sortButton">Rearrange List</button>
+          <button class="sortButton">Update</button>
         </div>
-        <div class="theme_list_search" style="display:none;">
+        <!-- <div class="theme_list_search">
           <input type="search" />
           <button class="searchButton"><i class="material-icons md-24">search</i></button>
-        </div>
+        </div> -->
       </div>
 
       <!-- start of theme list -->

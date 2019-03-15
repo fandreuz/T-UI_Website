@@ -9,6 +9,8 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{% static "css/style.css" %}" type="text/css" />
 
+    <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+
     <!-- Scripts -->
     <!-- jQuery Library -->
     <script src="{% static "js/jquery-3.3.1.min.js" %}" charset="utf-8"></script>
@@ -76,18 +78,6 @@
                   <label for="notes_color">notes_color</label>
                   <input class="jscolor" defaultvalue="{{ default_theme.notes_color }}" value="{{ default_theme.notes_color }}">
                 </div>
-                <div class="swatch" style="background-color:{{ default_theme.alias_content_color }}">
-                  <label for="alias_content_color">alias_content_color</label>
-                  <input class="jscolor" defaultvalue="{{ default_theme.alias_content_color }}" value="{{ default_theme.alias_content_color }}">
-                </div>
-                <div class="swatch" style="background-color:{{ default_theme.app_installed_color }}">
-                  <label for="app_installed_color">app_installed_color</label>
-                  <input class="jscolor" defaultvalue="{{ default_theme.app_installed_color }}" value="{{ default_theme.app_installed_color }}">
-                </div>
-                <div class="swatch" style="background-color:{{ default_theme.app_uninstalled_color }}">
-                  <label for="app_uninstalled_color">app_uninstalled_color</label>
-                  <input class="jscolor" defaultvalue="{{ default_theme.app_uninstalled_color }}" value="{{ default_theme.app_uninstalled_color }}">
-                </div>
                 <div class="swatch" style="background-color:{{ default_theme.battery_color_high }}">
                   <label for="battery_color_high">battery_color_high</label>
                   <input class="jscolor" defaultvalue="{{ default_theme.battery_color_high }}" value="{{ default_theme.battery_color_high }}">
@@ -103,22 +93,6 @@
                 <div class="swatch" style="background-color:{{ default_theme.enter_color }}">
                   <label for="enter_color">enter_color</label>
                   <input class="jscolor" defaultvalue="{{ default_theme.enter_color }}" value="{{ default_theme.enter_color }}">
-                </div>
-                <div class="swatch" style="background-color:{{ default_theme.navigationbar_color }}">
-                  <label for="navigationbar_color">navigationbar_color</label>
-                  <input class="jscolor" defaultvalue="{{ default_theme.navigationbar_color }}" value="{{ default_theme.navigationbar_color }}">
-                </div>
-                <div class="swatch" style="background-color:{{ default_theme.statusbar_color }}">
-                  <label for="statusbar_color">statusbar_color</label>
-                  <input class="jscolor" defaultvalue="{{ default_theme.statusbar_color }}" value="{{ default_theme.statusbar_color }}">
-                </div>
-                <div class="swatch" style="background-color:{{ default_theme.notes_locked_color }}">
-                  <label for="notes_locked_color">notes_locked_color</label>
-                  <input class="jscolor" defaultvalue="{{ default_theme.notes_locked_color }}" value="{{ default_theme.notes_locked_color }}">
-                </div>
-                <div class="swatch" style="background-color:{{ default_theme.link_color }}">
-                  <label for="link_color">link_color</label>
-                  <input class="jscolor" defaultvalue="{{ default_theme.link_color }}" value="{{ default_theme.link_color }}">
                 </div>
               </div>
               <h1>suggestions.xml</h1>
@@ -159,14 +133,6 @@
                   <label for="contact_text_color">contact_text_color</label>
                   <input class="jscolor" defaultvalue="{{ default_theme.contact_text_color }}" value="{{ default_theme.contact_text_color }}">
                 </div>
-                <div class="swatch" style="background-color:{{ default_theme.default_bg_color }}">
-                  <label for="default_bg_color">default_bg_color</label>
-                  <input class="jscolor" defaultvalue="{{ default_theme.default_bg_color }}" value="{{ default_theme.default_bg_color }}">
-                </div>
-                <div class="swatch" style="background-color:{{ default_theme.default_text_color }}">
-                  <label for="default_text_color">default_text_color</label>
-                  <input class="jscolor" defaultvalue="{{ default_theme.default_text_color }}" value="{{ default_theme.default_text_color }}">
-                </div>
                 <div class="swatch" style="background-color:{{ default_theme.file_bg_color }}">
                   <label for="file_bg_color">file_bg_color</label>
                   <input class="jscolor" defaultvalue="{{ default_theme.file_bg_color }}" value="{{ default_theme.file_bg_color }}">
@@ -181,8 +147,7 @@
                 </div>
                 <div class="swatch" style="background-color:{{ default_theme.song_text_color }}">
                   <label for="song_text_color">song_text_color</label>
-                  <input class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}",
-                        defaultvalue="{{ default_theme.song_text_color }}" value="{{ default_theme.song_text_color }}">
+                  <input class="jscolor" defaultvalue="{{ default_theme.song_text_color }}" value="{{ default_theme.song_text_color }}">
                 </div>
               </div>
             </div>
@@ -210,7 +175,22 @@
               <a id="cancelSendData">      [Cancel]     </a>
             </div>
           </div>
-
+          <span class="saved" style="display:none;">
+            <div class="desktop-only">
+              <div class="themeString">
+                <code><pre>theme id not available before publishing</pre></code>
+              </div>
+            </div>
+            <div class="mobile-only">
+              <div class="themeString">
+                <code><pre>theme id not available before publishing</pre></code>
+              </div>
+              <div class="mobile-only">
+                <a>      [Paste into T-UI]     </a>
+              </div>
+            </div>
+          </span>
+        </div>
       </div>
     </div>
   </body>

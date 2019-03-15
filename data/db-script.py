@@ -11,7 +11,7 @@ def print_dict(dc, prefix="\t", depth=1):
         else:
             print(_prefix + key + ' : "' + str(value) + '"')
 
-json_content = json.load(open('output.txt', 'r'))
+json_content = json.load(open('themes.txt', 'r'))
 
 tb_name = "themes_theme"
 
@@ -22,26 +22,17 @@ cursor = conn.cursor()
 
 #cursor.execute(create_query)
 
-columns = "name, apps_bg_color, cmd_bg_color, apps_text_color, file_bg_color, cmd_text_color, default_bg_color, contact_bg_color, file_text_color, song_text_color, alias_bg_color, alias_text_color, default_text_color, song_bg_color, enabled, transparent, contact_text_color, overlay_color, storage_color, enter_color, statusbar_color, navigationbar_color, toolbar_bg, battery_color_high, app_uninstalled_color, app_installed_color, input_color, battery_color_medium, toolbar_color, output_color, ram_color, battery_color_low, time_color, device_color, bg_color, alias_content_color, downloads, author"
+columns = "battery_color_low, cmd_bg_color, storage_color, transparent_suggestions, ram_color, bg_color, cmd_text_color, alias_text_color, contact_text_color, author, contact_bg_color, enter_color, output_color, file_text_color, device_color, time_color, notes_color, downloads, apps_bg_color, song_bg_color, toolbar_color, alias_bg_color, name, battery_color_high, apps_text_color, song_text_color, input_color, toolbar_bg, file_bg_color, show_suggestions, battery_color_medium"
 
-for _,theme in json_content['themes'].items():
+for _,theme in json_content.items():
     nulls = 0
     values = ""
     for key in columns.split(', '):
-        if key == 'authorauth':
-            key = 'authorAuth'
-
         try:
             value = theme[key]
         except:
-            try:
-                value = theme['files']['THEME'][key]
-            except:
-                try:
-                    value = theme['files']['SUGGESTIONS'][key]
-                except:
-                    value = ""
-                    nulls += 1
+            value = ""
+            nulls += 1
 
         values = values + "'" + str(value) + "'" + ', '
 

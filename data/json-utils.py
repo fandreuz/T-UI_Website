@@ -2,15 +2,15 @@ import argparse
 import json
 import re
 
-isascii = lambda s: len(s) == len(s.encode())
+def is_ascii(s):
+    return all(ord(c) < 128 for c in s)
 
 # collapse the node if a non-ascii character is found
 def check_node_asian(dc):
     for key in list(dc.keys()):
         value = dc[key]
-        if not isascii(key):
+        if not is_ascii(key):
             dc.pop(key)
-            break
         elif type(value) is dict:
             check_node_asian(value)
 
@@ -113,13 +113,11 @@ def get_django_model(node):
 boolean_values = ['True', 'true', 'False', 'false']
 def data_type_model(key,value):
     if type(value) == int:
-        return "IntegerField()"
-    elif key == "pub_date":
-        return "DateField()"
+        return "IntegerField(default=%d)" % (value)
     elif type(value) == bool or value in boolean_values:
-        return "BooleanField()"
+        return "BooleanField(default=%s)" % (str(value))
     else:
-        return "TextField()"
+        return "TextField(default='%s')" % (str(value))
 
 #######
 
@@ -220,6 +218,16 @@ def print_dict(dc, prefix="\t", depth=1):
         else:
             print(_prefix + key + ' : "' + str(value) + '"')
 
+######
+
+def rename(dc, old, new):
+    for key in list(dc.keys()):
+        try:
+            ind = old.index(key)
+            dc[new[ind]] = dc.pop(key, None)
+        except:
+            if type(dc[key]) is dict:
+                rename(dc[key], old, new)
 
 #Main
 
@@ -229,6 +237,7 @@ parser.add_argument('output_file', type=argparse.FileType('w'), nargs='?', help=
 parser.add_argument('-ra', action='store_true', help='Remove non-ASCII characters entries')
 parser.add_argument('-rd', action='store_true', help='Replace digits with letters ("0" -> "Zero")')
 parser.add_argument('-nc', action='store_true', help='Normalize the color format (rgb(...) -> #...)')
+parser.add_argument('-rnm', '--rename', nargs='+', help='Rename key to (key1 key2 ... keyN new_key1 new_key2 ... new_keyN)')
 parser.add_argument('-k', '--keep', nargs='+', help='Keep something')
 parser.add_argument('-dm', nargs='*', help="Build a Django model from the input JSON file. You can provide a specific node ('-dm root child ...')")
 parser.add_argument('-ds', nargs='*', help="Build a SQL query which creates a table for the specified JSON node. You can provide a specific node ('-ds root child ...')")
@@ -240,8 +249,8 @@ parser.add_argument('-c', '--count', action='store_true', help='Print the number
 parser.add_argument('-l', '--level', nargs=1, type=int, help="Set maximum number of levels in the JSON file")
 
 args = parser.parse_args()
-
 json_content = json.load(args.input_file)
+
 if args.count:
     dc = json_content
     while(len(dc.keys()) <= 1):
@@ -264,27 +273,6 @@ if args.rd:
 if args.nc:
     replace_rgb_with_hex(json_content)
     output = json_content
-if args.dm != None:
-    node = json_content
-    for i in args.dm:
-        node = node[i]
-
-    model = get_django_model(node)
-    output = model
-if args.ds != None:
-    node = json_content
-    for i in args.ds:
-        node = node[i]
-
-    query = get_sql_query(node)
-    output = query
-if args.cl != None:
-    node = json_content
-    for i in args.cl:
-        node = node[i]
-
-    clmns = get_columns(node)
-    output = clmns
 if args.rsy != None:
     rm = ""
     for i in args.rsy:
@@ -298,12 +286,41 @@ if args.rm != None:
 if args.level != None:
     adjust_level(json_content, args.level[0], 0)
     output = json_content
+if args.rename != None:
+    old = args.rename[:len(args.rename)//2]
+    new = args.rename[len(args.rename)//2:]
 
+    rename(json_content, old, new)
+    output = json_content
+
+if args.dm != None:
+    node = json_content
+    for i in args.dm:
+        node = node[i]
+    model = get_django_model(node)
+    output = model
+if args.ds != None:
+    node = json_content
+    for i in args.ds:
+        node = node[i]
+    query = get_sql_query(node)
+    output = query
+if args.cl != None:
+    node = json_content
+    for i in args.cl:
+        node = node[i]
+    clmns = get_columns(node)
+    output = clmns
 if args.print:
     if type(output) == dict:
         print_dict(output)
     else:
         print(output)
+else:
+    if type(output) == dict:
+        json.dump(output, args.output_file, sort_keys=True, indent=3, separators=(',', ': '))
+    else:
+        args.output_file.write(output)
 
 if args.count:
     dc = json_content
@@ -311,10 +328,4 @@ if args.count:
         for i in dc.keys():
             dc = dc[i]
             break
-
     print("after: %d" % (len(dc.keys())))
-
-if type(output) == dict:
-    json.dump(output, args.output_file, sort_keys=True, indent=3, separators=(',', ': '))
-else:
-    args.output_file.write(output)

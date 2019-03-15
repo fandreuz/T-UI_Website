@@ -25,7 +25,7 @@ SECRET_KEY = 'cge!2ymvzt@o%f7+5^s12uf81e@i*qzihd0x=4gfv*4*c*ob1i'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', 'whispering-depths-58956.herokuapp.com/']
 
 
 # Application definition

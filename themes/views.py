@@ -17,15 +17,14 @@ def index(request):
 
     context = {
         "header" : get_header(request, './new_theme', 'New theme'),
-        "theme_list" : get_theme_list(request, 20, 0, 0),
+        # default values from index.html
+        "theme_list" : get_theme_list(request, 20, 3, 0),
         "dt_string" : dt
     }
 
     return HttpResponse(template.render(context, request))
 
 def new_theme(request):
-    print('heyhye')
-
     template = loader.get_template('themes/new_theme.html')
     theme_preview_template = loader.get_template('themes/theme_preview.html')
 
@@ -54,6 +53,13 @@ def new_theme(request):
 def more_themes(request, n, order_by, order_type):
     return HttpResponse(get_theme_list(request, n, order_by, order_type))
 
+def publish_theme(request):
+    theme = json.loads(request.POST['theme'])
+    theme_entry = Theme.objects.create(**theme)
+    print(theme_entry.id)
+
+    response = JsonResponse({'id' : theme_entry.id})
+    return response
 
 # nested templates
 
@@ -79,7 +85,9 @@ def get_theme_list(request, n, order_by, order_type):
         'themes' : []
     }
 
-    for theme in get_themes(n):
+    themes = get_themes(n, order_by, order_type);
+
+    for theme in themes:
         theme_preview_context['theme'] = theme
 
         theme_context['theme_preview'] = theme_preview_template.render(theme_preview_context, request)
@@ -108,5 +116,12 @@ def adjust_colors(theme):
 
     return theme
 
-def get_themes(n):
-    return list(Theme.objects.all())[:n]
+order_by_columns = ['name', 'author', 'downloads', 'id']
+def get_themes(n, order_by, order_type):
+    # '-' -> desc
+    if order_type:
+        prefix = ''
+    else:
+        prefix = '-'
+
+    return Theme.objects.order_by(prefix + order_by_columns[order_by])[:n]

@@ -65,9 +65,9 @@ $(document).ready(function() {
       var forVal = $(this).attr('for');
 
       // the current value of the jscolor input
-      var siblingVal = $(this).siblings("[class='jscolor']").val();
+      var siblingVal = $(this).siblings("[class='jscolor']").val().replace(/\s/g, '').toLowerCase();
       // default value
-      var siblingDefaultVal = $(this).siblings("[class='jscolor']").attr('defaultValue');
+      var siblingDefaultVal = $(this).siblings("[class='jscolor']").attr('defaultValue').toLowerCase();
 
       if(siblingVal != siblingDefaultVal) {
         themeXML[forVal] = '#' + siblingVal;
@@ -86,10 +86,10 @@ $(document).ready(function() {
         var forVal = $(this).attr('for');
         if(transparent && forVal.includes('bg')) return;
         else {
-          var siblingVal = $(this).siblings("[class='jscolor']").val();
-          var siblingDefaultVal = $(this).siblings("[class='jscolor']").attr('defaultValue');
+          var siblingVal = $(this).siblings("[class='jscolor']").val().replace(/\s/g, '').toLowerCase();
+          var siblingDefaultVal = $(this).siblings("[class='jscolor']").attr('defaultValue').toLowerCase();
 
-          if(siblingVal != siblingDefaultVal) {
+          if(siblingVal.length > 0 && siblingVal != siblingDefaultVal) {
             suggestionsXML[forVal] = '#' + siblingVal;
             changeCounter++;
           }
@@ -116,71 +116,76 @@ $(document).ready(function() {
     $('.links').css("display", "block");
   });
 
-  // checks if the theme name is good
-  function checkname(response)
+  function checkTheme()
   {
     var name = $("#theme_name").val();
-    var theme_name_used = response.includes(name);
-    if(name.length<5) {
-      $('.themeString code pre').text("Theme name must be 5 characters long.").css("color","#FF0000");
+    var author = $("#author_name").val();
+
+    if(name.length < 5) {
+      $('.themeString code pre').text("Name: at least 5 characters").css("color","#FF0000");
       $('.saved').css("display", "block");
       $('#cancelSendData').css("display", "inline-block");
     }
     else if(!isNaN(name.charAt(0))) {
-      $('.themeString code pre').text("Theme name cannot start with a Number.").css("color","#FF0000");
+      $('.themeString code pre').text("Name: the first character is a digit").css("color","#FF0000");
       $('.saved').css("display", "block");
       $('#cancelSendData').css("display", "inline-block");
-    }
-    else if(theme_name_used) {
-      $('.themeString code pre').text("Theme name already used try a different name.").css("color","#FF0000");
+    } else if(author.length < 3) {
+      $('.themeString code pre').text("Author: at least 5 characters").css("color","#FF0000");
       $('.saved').css("display", "block");
       $('#cancelSendData').css("display", "inline-block");
-    }
-    else {
-      var files = {};
+    } else {
       generateObj();
-      files["SUGGESTIONS"] = suggestionsXML;
-      files["THEME"] = themeXML;
-      if(changeCounter>3){
-//        console.log(changeCounter);
-        $.ajax({
-          url: "./test.php",
-          type: "POST",
-          data: {"author_name":$("#author_name").val(),"downloads":0,"files":files,"name":name,"published":true},
-          datatype: 'json',
-          success: function(result) {
-            $('.themeString code pre').text(result).css("color","#14FF00");
-            $('#sendData').css("display", "none");
-            $('#cancelSendData').css("display", "none");
-          },
-          error: function(xhr, resp, text) {
-            $('.themeString code pre').text("Error sending data. Please try again.").css("color","#FF0000");
-            $('#cancelSendData').css("display", "inline-block");
-          }
-        });
-        $('.saved').css("display", "block");
-      }
-      else {
-        $('.themeString code pre').text("Few more customizations needed to qualify for Publishing.").css("color","#FF0000");
+      if(changeCounter < 3) {
+        $('.themeString code pre').text("You have to make at least 3 changes: ".concat(3 - changeCounter).concat(" to go")).css("color","#FF0000");
         $('.saved').css("display", "block");
         $('#cancelSendData').css("display", "inline-block");
+      } else {
+        publish();
       }
     }
   }
 
-  $("#sendData").on('click', function() {
-    var name = $("#theme_name").val();
-    $.ajax({
-      url: "./show_data.php",
-      type: "POST",
-      data: {"data_type":"json","theme_list":"view"},
+  function publish() {
+    dt = {
+      author: $("#author_name").val(),
+      name: $("#theme_name").val(),
+      theme : JSON.stringify(Object.assign({}, themeXML, suggestionsXML)),
+      csrfmiddlewaretoken: window.CSRF_TOKEN
+    };
+
+    $.post({
+      url: "/ajax/publish_theme",
+      data: dt,
       datatype: 'json',
-      success: checkname,
+      success: function(data) {
+        $('.themeString code pre').text('Published with ID: ' + data['id']).css("color","#14FF00");
+        $('#sendData').css("display", "none");
+        $('#cancelSendData').css("display", "none");
+      },
       error: function(xhr, resp, text) {
-        $('.themeString code pre').text("Error sending data. Please try again.").css("color","#FF0000");
+        console.log('error');
+        $('.themeString code pre').text("An error has occurred. Please try again.").css("color","#FF0000");
         $('#cancelSendData').css("display", "inline-block");
       }
     });
+    $('.saved').css("display", "block");
+  }
+
+  $("#sendData").on('click', function() {
+    var name = $("#theme_name").val();
+    // $.ajax({
+    //   url: "./show_data.php",
+    //   type: "POST",
+    //   data: {"data_type":"json","theme_list":"view"},
+    //   datatype: 'json',
+    //   success: checkTheme,
+    //   error: function(xhr, resp, text) {
+    //     $('.themeString code pre').text("Error sending data. Please try again.").css("color","#FF0000");
+    //     $('#cancelSendData').css("display", "inline-block");
+    //   }
+    // });
+    checkTheme();
   });
 
   $("[type='checkbox']").on('click change', function() {
