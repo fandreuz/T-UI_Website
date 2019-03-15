@@ -15,7 +15,8 @@ json_content = json.load(open('themes.txt', 'r'))
 
 tb_name = "themes_theme"
 
-conn = psycopg2.connect("host=localhost dbname=test user=andre password=Dodici12")
+#conn = psycopg2.connect("host=localhost dbname=test user=andre password=Dodici12")
+conn = psycopg2.connect('postgres://krajdlueqepczd:7b1f07211df53cddf75191a4a1ac4c8224ba0ae90812bf6165f1168841936d9a@ec2-184-72-238-22.compute-1.amazonaws.com:5432/d5ikss4pga2m3c')
 cursor = conn.cursor()
 
 #create_query = "CREATE TABLE %s(name text, downloads integer, published boolean, authorAuth text, author text, alias_text_color text, alias_bg_color text, file_bg_color text, song_bg_color text, cmd_text_color text, default_bg_color text, apps_bg_color text, contact_bg_color text, contact_text_color text, song_text_color text, file_text_color text, default_text_color text, apps_text_color text, enabled boolean, transparent boolean, cmd_bg_color text, toolbar_color text, input_color text, enter_color text, time_color text, alias_content_color text, ram_color text, storage_color text, toolbar_bg text, battery_color_low text, app_uninstalled_color text, device_color text, output_color text, battery_color_medium text, overlay_color text, app_installed_color text, battery_color_high text, navigationbar_color text, statusbar_color text, bg_color text);" % (tb_name)
