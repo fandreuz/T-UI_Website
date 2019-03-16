@@ -11,8 +11,8 @@ This is the official website of [**t-ui**](https://play.google.com/store/apps/de
     * Author name
 
 <p float="left">
-  <img src="http://oi67.tinypic.com/2va1b9h.jpg" width="500" />
-  <img src="http://oi64.tinypic.com/1zdvoxs.jpg" width="500" /> 
+  <img src="http://oi67.tinypic.com/2va1b9h.jpg" width="400" />
+  <img src="http://oi64.tinypic.com/1zdvoxs.jpg" width="400" /> 
 </p>
 
 ## Roadmap
