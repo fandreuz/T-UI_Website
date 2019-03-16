@@ -55,8 +55,10 @@ def more_themes(request, n, order_by, order_type):
 
 def publish_theme(request):
     theme = json.loads(request.POST['theme'])
+    theme['name'] = request.POST['name']
+    theme['author'] = request.POST['author']
+
     theme_entry = Theme.objects.create(**theme)
-    print(theme_entry.id)
 
     response = JsonResponse({'id' : theme_entry.id})
     return response
