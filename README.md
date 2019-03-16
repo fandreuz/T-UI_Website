@@ -11,8 +11,8 @@ This is the official website of [**t-ui**](https://play.google.com/store/apps/de
     * Author name
 
 <p float="left">
-  <img src="http://oi67.tinypic.com/2va1b9h.jpg" width="300" />
-  <img src="http://oi64.tinypic.com/1zdvoxs.jpg" width="300" /> 
+  <img src="http://oi67.tinypic.com/2va1b9h.jpg" width="500" />
+  <img src="http://oi64.tinypic.com/1zdvoxs.jpg" width="500" /> 
 </p>
 
 ## Roadmap
@@ -38,6 +38,7 @@ I'd like to thank some people, which managed the website for a long time for fre
 When I took the website code, it was HTML+Javascript+PHP. I wanted to try [Django](https://www.djangoproject.com/), so I removed some PHP and Javascript and replaced it with Python (mostly for the server-side operations).
 
 ## Open source software
++ Django
 + Gunicorn
 + Postgres
 + dj-database-url
